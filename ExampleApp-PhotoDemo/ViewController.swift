@@ -41,7 +41,14 @@ class ViewController: UIViewController {
         let assetSubject = PassthroughSubject<PHAsset, Never>()
         
         loadImagesCancellable = assetSubject
-            .flatMap { self.imagePublisher(asset: $0, targetSize: targetSize, contentMode: .aspectFill) }
+            .collect()
+            .flatMap { $0.publisher }
+            .print("ASSET ARRAY")
+            .flatMap(maxPublishers: .max(2)) {
+                self.imagePublisher(asset: $0, targetSize: targetSize, contentMode: .aspectFill)
+                    .print("IMAGE|\($0.localIdentifier)")
+            }
+            .print("FLATMAP")
             .compactMap { $0 }
             .collect()
             .sink { images in
@@ -54,9 +61,10 @@ class ViewController: UIViewController {
         
         
         fetchResult.enumerateObjects { asset, index, _ in
+            print("Sending asset: \(asset.localIdentifier)")
             assetSubject.send(asset)
         }
-        
+        print("Done with asets")
         assetSubject.send(completion: .finished)
     }
 
