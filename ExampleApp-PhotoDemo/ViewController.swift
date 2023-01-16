@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     
     private var cancellables: Set<AnyCancellable> = []
     private var loadPhotosCancellable: AnyCancellable?
+    private var loadImagesCancellable: AnyCancellable?
     
     private var dataSource: UICollectionViewDiffableDataSource<Int, UIImage>!
     
@@ -36,6 +37,27 @@ class ViewController: UIViewController {
         print("Fetched \(fetchResult.count) photos")
         
         let targetSize = CGSize(width: 512, height: 512)
+        
+        let assetSubject = PassthroughSubject<PHAsset, Never>()
+        
+        loadImagesCancellable = assetSubject
+            .flatMap { self.imagePublisher(asset: $0, targetSize: targetSize, contentMode: .aspectFill) }
+            .compactMap { $0 }
+            .collect()
+            .sink { images in
+                var snapshot = NSDiffableDataSourceSnapshot<Int, UIImage>()
+                snapshot.appendSections([1])
+                snapshot.appendItems(images)
+                self.dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
+            }
+        
+        
+        
+        fetchResult.enumerateObjects { asset, index, _ in
+            assetSubject.send(asset)
+        }
+        
+        assetSubject.send(completion: .finished)
     }
 
     @IBAction func loadPhotosTapped(_ sender: UIBarButtonItem) {
@@ -63,6 +85,11 @@ class ViewController: UIViewController {
         requestOptions.deliveryMode = .fastFormat
         requestOptions.resizeMode = .exact
         
-        fatalError()
+        return Future { promise in
+            PHImageManager.default().requestImage(for: asset, targetSize: targetSize, contentMode: contentMode, options: requestOptions) { image, info in
+                promise(.success(image))
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

@@ -30,7 +30,7 @@
                                 </items>
                             </toolbar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="FyA-4M-Dxc">
-                                <rect key="frame" x="16" y="59" width="128" height="128"/>
+                                <rect key="frame" x="9" y="59" width="374" height="386"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Jxw-Xy-mVE">
@@ -47,11 +47,20 @@
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HzQ-9R-vM8">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HzQ-9R-vM8">
                                                     <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="HzQ-9R-vM8" secondAttribute="height" multiplier="1:1" id="1Q7-SU-Uvw"/>
+                                                        <constraint firstAttribute="width" constant="128" id="san-9K-5j5"/>
+                                                    </constraints>
                                                 </imageView>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="HzQ-9R-vM8" firstAttribute="top" secondItem="yPe-nA-UQf" secondAttribute="top" id="CeR-tK-4K0"/>
+                                                <constraint firstAttribute="bottom" secondItem="HzQ-9R-vM8" secondAttribute="bottom" id="HVA-xF-nhV"/>
+                                                <constraint firstAttribute="trailing" secondItem="HzQ-9R-vM8" secondAttribute="trailing" id="fd9-7A-iBK"/>
+                                                <constraint firstItem="HzQ-9R-vM8" firstAttribute="leading" secondItem="yPe-nA-UQf" secondAttribute="leading" id="hEc-Op-HZm"/>
+                                            </constraints>
                                         </collectionViewCellContentView>
                                         <connections>
                                             <outlet property="imageView" destination="HzQ-9R-vM8" id="lMp-E8-M1J"/>
