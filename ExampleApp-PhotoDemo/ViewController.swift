@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
     private var cancellables: Set<AnyCancellable> = []
+    private var loadPhotosCancellable: AnyCancellable?
+    
     private var dataSource: UICollectionViewDiffableDataSource<Int, UIImage>!
     
     override func viewDidLoad() {
@@ -37,7 +39,23 @@ class ViewController: UIViewController {
     }
 
     @IBAction func loadPhotosTapped(_ sender: UIBarButtonItem) {
+        loadPhotosCancellable = authorizationStatusPublisher
+            .drop(while: { $0 != .authorized })
+            .sink {[weak self] _ in
+                self?.fetchPhotos()
+            }
     }
+    
+    private var authorizationStatusPublisher: AnyPublisher<PHAuthorizationStatus, Never> = {
+        Deferred {
+            Future { promise in
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+                    promise(.success(status))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }()
     
     private func imagePublisher(asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode) -> AnyPublisher<UIImage?, Never> {
         let requestOptions = PHImageRequestOptions()
